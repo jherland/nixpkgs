@@ -12,6 +12,9 @@
   tqdm,
   pytestCheckHook,
   nix-update-script,
+
+  # passthru
+  native-sparse-attention-pytorch,
 }:
 
 buildPythonPackage (finalAttrs: {
@@ -55,6 +58,13 @@ buildPythonPackage (finalAttrs: {
     # The following fails on: assert torch.cuda.is_available()
     "test_triton_nsa.py"
   ];
+
+  passthru.gpuCheck = native-sparse-attention-pytorch.overridePythonAttrs (old: {
+    requiredSystemFeatures = [ "cuda" ];
+
+    # Run all tests, including the ones that need a GPU
+    disabledTestPaths = [ ];
+  });
 
   passthru.updateScript = nix-update-script { };
 
